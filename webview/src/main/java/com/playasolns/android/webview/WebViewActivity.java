@@ -1,14 +1,29 @@
 package com.playasolns.android.webview;
 
+import android.content.Intent;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
+import pub.devrel.easypermissions.AfterPermissionGranted;
+import pub.devrel.easypermissions.EasyPermissions;
+
 public class WebViewActivity extends AppCompatActivity {
 
+    private String _TAG = "WEB_VIEW_ACTIVITY";
+
+    public static final String EXTRA_PERMISSIONS = "PERMISSIONS";
+    public static final String EXTRA_ON_PERMISSIONS_GRANTED = "ON_PERMISSIONS_GRANTED";
+
     private WebView webview;
+
+    private final int ON_PERMISSION = 1;
+
+    private OnPermissionGranted onPermissionGranted;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,6 +41,23 @@ public class WebViewActivity extends AppCompatActivity {
 
         webview.loadUrl(getString(R.string.web_view_home));
 
+        Intent i = getIntent();
+        String onPermissionGrantedClassName = i.getStringExtra(EXTRA_ON_PERMISSIONS_GRANTED);
+        if(null != onPermissionGrantedClassName){
+            try {
+                Class _class = Class.forName(onPermissionGrantedClassName);
+                onPermissionGranted = (OnPermissionGranted) _class.newInstance();
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            } catch (InstantiationException e) {
+                e.printStackTrace();
+            }
+        }
+
+        getPermissions(i.getStringArrayExtra(EXTRA_PERMISSIONS));
+
     }
 
     @Override
@@ -35,6 +67,32 @@ public class WebViewActivity extends AppCompatActivity {
         } else {
             super.onBackPressed();
         }
+    }
+
+    @AfterPermissionGranted(ON_PERMISSION)
+    protected void start(){
+        if(null != onPermissionGranted){
+            onPermissionGranted.onSuccess(getApplicationContext());
+        }
+
+    }
+
+    private void getPermissions(String[] permissions){
+        if(null == permissions || permissions.length == 0){
+            Log.d(_TAG,"permissions were empty");
+            start();
+        }else{
+            Log.d(_TAG, "getting permissions for "+ permissions.length);
+            EasyPermissions.requestPermissions(this, "Please provide these permissions",ON_PERMISSION, permissions);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        // Forward results to EasyPermissions
+        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
     }
 
 

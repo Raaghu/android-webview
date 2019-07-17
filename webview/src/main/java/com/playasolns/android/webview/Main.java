@@ -8,8 +8,11 @@ public class Main {
 
     public static final String[] permissions = {Manifest.permission.INTERNET};
 
-    public static void init(Context context){
-        context.startActivity(new Intent(context, WebViewActivity.class));
+    public static void init(Context context, String[] permissions, String onPermissionGrantedClassName){
+        Intent webViewActivity = new Intent(context, WebViewActivity.class);
+        webViewActivity.putExtra(WebViewActivity.EXTRA_PERMISSIONS, permissions);
+        webViewActivity.putExtra(WebViewActivity.EXTRA_ON_PERMISSIONS_GRANTED, onPermissionGrantedClassName);
+        context.startActivity(webViewActivity);
     }
 
 }
