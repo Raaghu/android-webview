@@ -12,6 +12,7 @@ public class Main {
         Intent webViewActivity = new Intent(context, WebViewActivity.class);
         webViewActivity.putExtra(WebViewActivity.EXTRA_PERMISSIONS, permissions);
         webViewActivity.putExtra(WebViewActivity.EXTRA_ON_PERMISSIONS_GRANTED, onPermissionGrantedClassName);
+        webViewActivity.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(webViewActivity);
     }
 
