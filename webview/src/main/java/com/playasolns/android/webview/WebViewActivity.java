@@ -1,8 +1,8 @@
 package com.playasolns.android.webview;
 
+import android.app.ActionBar;
+import android.app.Activity;
 import android.content.Intent;
-import android.support.annotation.NonNull;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Window;
@@ -10,10 +10,12 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
+import androidx.annotation.NonNull;
+
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
 
-public class WebViewActivity extends AppCompatActivity {
+public class WebViewActivity extends Activity {
 
     private String _TAG = "WEB_VIEW_ACTIVITY";
 
@@ -30,10 +32,13 @@ public class WebViewActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE); //will hide the title
-        getSupportActionBar().hide(); // hide the title bar
+        ActionBar actionBar = getActionBar();
+        if(null != actionBar) {
+            actionBar.hide();
+        }
         setContentView(R.layout.activity_webview);
 
-        webview = findViewById(R.id.activity_webview);
+        webview = (WebView) findViewById(R.id.activity_webview);
 
         // Enable redirects within the webView
         webview.setWebViewClient(new WebViewClient());
